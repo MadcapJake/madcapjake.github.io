@@ -7,7 +7,7 @@
     <atom:link href="http://madcapjake.github.io/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
-        <title>Perl 6 file icons in Atom Editor</title>
+        <title>Perl 6 File Icons in Atom Editor</title>
         
         
           <description>&lt;p&gt;This morning, I decided to spend some time trying to get file icons for Perl 6 files.  None of the font packages that file-icons includes have a Perl 6 icon so I would need to take the Camelia logo and turn it into a small icon.&lt;/p&gt;

@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>The Problem of Leisure - Perl 6 file icons in Atom Editor</title>
+  <title>The Problem of Leisure - Perl 6 File Icons in Atom Editor</title>
   <link rel="shortcut icon" href="/assets/images/favicon.ico">
   <link rel="stylesheet" href="/assets/css/style.css">
   <link rel="alternate" type="application/rss+xml" title="My Blog" href="/rss.xml">
@@ -37,7 +37,7 @@
   <section id="wrapper" class="">
     <article class="post">
     <header>
-        <h1>Perl 6 file icons in Atom Editor</h1>
+        <h1>Perl 6 File Icons in Atom Editor</h1>
         <h2 class="headline">December 3, 2015</h2>
     </header>
     <section id="post-body">
@@ -60,23 +60,23 @@ git clone https://github.com/MadcapJake/perl6-atom-file-icon camelia
 atom ~/.atom/styles.less
 </code></pre></div>
 <p>Then add this:</p>
-<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="k">@import</span> <span class="o">(</span><span class="nt">less</span><span class="o">)</span> <span class="s2">&quot;stylesheets/camelia/style.css&quot;</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-text" data-lang="text">@import (less) &quot;stylesheets/camelia/style.css&quot;;
 
-<span class="o">@</span><span class="p">{</span><span class="n">pane</span><span class="o">-</span><span class="n">tab</span><span class="o">-</span><span class="n">selector</span><span class="p">}</span><span class="o">,</span> <span class="nc">.icon-file-text</span> <span class="p">{</span>
-  <span class="o">&amp;</span><span class="p">[</span><span class="n">data</span><span class="o">-</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;META6.json&quot;</span><span class="p">]</span><span class="o">:</span><span class="n">before</span> <span class="err">{</span> <span class="o">.</span><span class="n">octicons</span><span class="p">;</span> <span class="o">.</span><span class="n">octicon</span><span class="o">-</span><span class="n">package</span> <span class="cp">!important</span><span class="p">;</span> <span class="p">}</span>
-<span class="err">}</span>
-<span class="o">@</span><span class="p">{</span><span class="n">pane</span><span class="o">-</span><span class="n">tab</span><span class="o">-</span><span class="n">selector</span><span class="p">}</span><span class="o">,</span> <span class="nc">.icon-file-text</span> <span class="p">{</span>
-  <span class="o">&amp;</span><span class="p">[</span><span class="n">data</span><span class="o">-</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;META.info&quot;</span><span class="p">]</span><span class="o">:</span><span class="n">before</span> <span class="err">{</span> <span class="o">.</span><span class="n">octicons</span><span class="p">;</span> <span class="o">.</span><span class="n">octicon</span><span class="o">-</span><span class="n">package</span> <span class="cp">!important</span><span class="p">;</span> <span class="p">}</span>
-<span class="err">}</span>
-<span class="o">@</span><span class="p">{</span><span class="n">pane</span><span class="o">-</span><span class="n">tab</span><span class="o">-</span><span class="n">selector</span><span class="p">}</span><span class="o">,</span> <span class="nc">.icon-file-text</span> <span class="p">{</span>
-  <span class="o">&amp;</span><span class="p">[</span><span class="n">data</span><span class="o">-</span><span class="n">name</span><span class="err">$</span><span class="o">=</span><span class="s2">&quot;.pl6&quot;</span><span class="p">]</span><span class="o">:</span><span class="n">before</span> <span class="err">{</span> <span class="o">.</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">im</span><span class="o">-</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">light</span><span class="o">-</span><span class="nb">green</span><span class="p">;</span> <span class="p">}</span>
-<span class="err">}</span>
-<span class="o">@</span><span class="p">{</span><span class="n">pane</span><span class="o">-</span><span class="n">tab</span><span class="o">-</span><span class="n">selector</span><span class="p">}</span><span class="o">,</span> <span class="nc">.icon-file-text</span> <span class="p">{</span>
-  <span class="o">&amp;</span><span class="p">[</span><span class="n">data</span><span class="o">-</span><span class="n">name</span><span class="err">$</span><span class="o">=</span><span class="s2">&quot;.pm6&quot;</span><span class="p">]</span><span class="o">:</span><span class="n">before</span> <span class="err">{</span> <span class="o">.</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">im</span><span class="o">-</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">light</span><span class="o">-</span><span class="nb">blue</span><span class="p">;</span> <span class="p">}</span>
-<span class="err">}</span>
-<span class="o">@</span><span class="p">{</span><span class="n">pane</span><span class="o">-</span><span class="n">tab</span><span class="o">-</span><span class="n">selector</span><span class="p">}</span><span class="o">,</span> <span class="nc">.icon-file-text</span> <span class="p">{</span>
-  <span class="o">&amp;</span><span class="p">[</span><span class="n">data</span><span class="o">-</span><span class="n">name</span><span class="err">$</span><span class="o">=</span><span class="s2">&quot;.t&quot;</span><span class="p">]</span><span class="o">:</span><span class="n">before</span> <span class="err">{</span> <span class="o">.</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">im</span><span class="o">-</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">light</span><span class="o">-</span><span class="nb">yellow</span><span class="p">;</span> <span class="p">}</span>
-<span class="err">}</span>
+@{pane-tab-selector}, .icon-file-text {
+  &amp;[data-name=&quot;META6.json&quot;]:before { .octicons; .octicon-package !important; }
+}
+@{pane-tab-selector}, .icon-file-text {
+  &amp;[data-name=&quot;META.info&quot;]:before { .octicons; .octicon-package !important; }
+}
+@{pane-tab-selector}, .icon-file-text {
+  &amp;[data-name$=&quot;.pl6&quot;]:before { .camelia; .im-camelia; .light-green; }
+}
+@{pane-tab-selector}, .icon-file-text {
+  &amp;[data-name$=&quot;.pm6&quot;]:before { .camelia; .im-camelia; .light-blue; }
+}
+@{pane-tab-selector}, .icon-file-text {
+  &amp;[data-name$=&quot;.t&quot;]:before { .camelia; .im-camelia; .light-yellow; }
+}
 </code></pre></div>
 <p>That should do it!  You can change the colors if you like, too.  Of course, keep in mind that changing the <code>.t</code> extension will overwrite any perl5 file icon (I think it&#39;s a camel).</p>
 
@@ -95,7 +95,7 @@ atom ~/.atom/styles.less
     </a>
 
     <section id="sharing">
-        <a class="twitter" href="https://twitter.com/intent/tweet?text=http://madcapjake.github.io/2015/perl6-file-icons/ - Perl 6 file icons in Atom Editor by @MadcapJake"><span class="icon-twitter"> Tweet</span></a>
+        <a class="twitter" href="https://twitter.com/intent/tweet?text=http://madcapjake.github.io/2015/perl6-file-icons/ - Perl 6 File Icons in Atom Editor by @MadcapJake"><span class="icon-twitter"> Tweet</span></a>
 
 <a class="facebook" href="#" onclick="
     window.open(
@@ -116,7 +116,7 @@ atom ~/.atom/styles.less
         <h3>Read more</h3>
         
             <li>
-                <a href="/2015/perl6-file-icons/">Perl 6 file icons in Atom Editor<aside class="dates">Dec 03</aside></a>
+                <a href="/2015/perl6-file-icons/">Perl 6 File Icons in Atom Editor<aside class="dates">Dec 03</aside></a>
             </li>
         
             <li>
