@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>The Problem of Leisure - Perl 6 file icons in Atom Editor</title>
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="alternate" type="application/rss+xml" title="My Blog" href="/rss.xml">
+  <link rel="stylesheet" href="/assets/css/highlight.css">
+  <link rel="stylesheet" href="/assets/css/pygments.css">
+</head>
+<body>
+
+  <nav class="main-nav">
+    
+        <a href="/"> <span class="arrow">←</span> Home </a>
+    
+
+    
+        
+            <a href="/about">About </a>
+        
+    
+    <a href="https://github.com/MadcapJake">GitHub</a>
+    <a href="https://bitbucket.org/MadcapJake/">Bitbucket</a>
+    <a href="https://twitter.com/MadcapJake">Twitter</a>
+    <a href="https://plus.google.com/u/0/+JakeRusso/posts">G+</a>
+    <a class="cta" href="/feed.xml">Subscribe</a>
+</nav>
+
+
+  
+
+  <section id="wrapper" class="">
+    <article class="post">
+    <header>
+        <h1>Perl 6 file icons in Atom Editor</h1>
+        <h2 class="headline">December 3, 2015</h2>
+    </header>
+    <section id="post-body">
+        <p>This morning, I decided to spend some time trying to get file icons for Perl 6 files.  None of the font packages that file-icons includes have a Perl 6 icon so I would need to take the Camelia logo and turn it into a small icon.</p>
+
+<p>Being a complete SVG noob (and without even trying to learn), I tried to edit the svg xml directly.  I adjusted the size, changed some metadata, and then completely lost myself looking at all the paths.  At this point I realized that I was doing something wrong as the image was not showing in the thumbnail of Gnome Files.</p>
+
+<p>After fumbling my way through Inkscape for a bit, I was lucky enough to get pinged by Juerd on irc that he already had a mono svg of Camelia.</p>
+
+<p><img src="http://juerd.nl/tmp/Camelia_mono_1path.svg" alt="Juerd&#39;s monochrome Camelia"></p>
+
+<p>At this point, I began to look up how to turn that into a font as Atom Editor is just a glorified web browser which means I would need some kind of web font (specifically, <code>woff</code>).  I found a fantastic free site called icomoon that lets you turn custom svg files into icon fonts.  So I converted that and dropped the folder into my <code>.atom</code> folder under <code>stylesheets</code>.  At this point I struggled a bit to understand how to import icomoon&#39;s css into my <code>styles.less</code> but after some help on Slack, I had it working!</p>
+
+<p><img src="https://pbs.twimg.com/media/CVUCgQkUsAEo41l.png:large" alt="Example shot of camelia file icons"></p>
+
+<p>If you&#39;re interested in having these lovely file icons, here&#39;s how you do it:</p>
+<div class="highlight"><pre><code class="language-shell" data-lang="shell">apm install file-icons
+<span class="nb">cd</span> ~/.atom/stylesheets
+git clone https://github.com/MadcapJake/perl6-atom-file-icon camelia
+atom ~/.atom/styles.less
+</code></pre></div>
+<p>Then add this:</p>
+<div class="highlight"><pre><code class="language-css" data-lang="css"><span class="k">@import</span> <span class="o">(</span><span class="nt">less</span><span class="o">)</span> <span class="s2">&quot;stylesheets/camelia/style.css&quot;</span><span class="p">;</span>
+
+<span class="o">@</span><span class="p">{</span><span class="n">pane</span><span class="o">-</span><span class="n">tab</span><span class="o">-</span><span class="n">selector</span><span class="p">}</span><span class="o">,</span> <span class="nc">.icon-file-text</span> <span class="p">{</span>
+  <span class="o">&amp;</span><span class="p">[</span><span class="n">data</span><span class="o">-</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;META6.json&quot;</span><span class="p">]</span><span class="o">:</span><span class="n">before</span> <span class="err">{</span> <span class="o">.</span><span class="n">octicons</span><span class="p">;</span> <span class="o">.</span><span class="n">octicon</span><span class="o">-</span><span class="n">package</span> <span class="cp">!important</span><span class="p">;</span> <span class="p">}</span>
+<span class="err">}</span>
+<span class="o">@</span><span class="p">{</span><span class="n">pane</span><span class="o">-</span><span class="n">tab</span><span class="o">-</span><span class="n">selector</span><span class="p">}</span><span class="o">,</span> <span class="nc">.icon-file-text</span> <span class="p">{</span>
+  <span class="o">&amp;</span><span class="p">[</span><span class="n">data</span><span class="o">-</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;META.info&quot;</span><span class="p">]</span><span class="o">:</span><span class="n">before</span> <span class="err">{</span> <span class="o">.</span><span class="n">octicons</span><span class="p">;</span> <span class="o">.</span><span class="n">octicon</span><span class="o">-</span><span class="n">package</span> <span class="cp">!important</span><span class="p">;</span> <span class="p">}</span>
+<span class="err">}</span>
+<span class="o">@</span><span class="p">{</span><span class="n">pane</span><span class="o">-</span><span class="n">tab</span><span class="o">-</span><span class="n">selector</span><span class="p">}</span><span class="o">,</span> <span class="nc">.icon-file-text</span> <span class="p">{</span>
+  <span class="o">&amp;</span><span class="p">[</span><span class="n">data</span><span class="o">-</span><span class="n">name</span><span class="err">$</span><span class="o">=</span><span class="s2">&quot;.pl6&quot;</span><span class="p">]</span><span class="o">:</span><span class="n">before</span> <span class="err">{</span> <span class="o">.</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">im</span><span class="o">-</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">light</span><span class="o">-</span><span class="nb">green</span><span class="p">;</span> <span class="p">}</span>
+<span class="err">}</span>
+<span class="o">@</span><span class="p">{</span><span class="n">pane</span><span class="o">-</span><span class="n">tab</span><span class="o">-</span><span class="n">selector</span><span class="p">}</span><span class="o">,</span> <span class="nc">.icon-file-text</span> <span class="p">{</span>
+  <span class="o">&amp;</span><span class="p">[</span><span class="n">data</span><span class="o">-</span><span class="n">name</span><span class="err">$</span><span class="o">=</span><span class="s2">&quot;.pm6&quot;</span><span class="p">]</span><span class="o">:</span><span class="n">before</span> <span class="err">{</span> <span class="o">.</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">im</span><span class="o">-</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">light</span><span class="o">-</span><span class="nb">blue</span><span class="p">;</span> <span class="p">}</span>
+<span class="err">}</span>
+<span class="o">@</span><span class="p">{</span><span class="n">pane</span><span class="o">-</span><span class="n">tab</span><span class="o">-</span><span class="n">selector</span><span class="p">}</span><span class="o">,</span> <span class="nc">.icon-file-text</span> <span class="p">{</span>
+  <span class="o">&amp;</span><span class="p">[</span><span class="n">data</span><span class="o">-</span><span class="n">name</span><span class="err">$</span><span class="o">=</span><span class="s2">&quot;.t&quot;</span><span class="p">]</span><span class="o">:</span><span class="n">before</span> <span class="err">{</span> <span class="o">.</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">im</span><span class="o">-</span><span class="n">camelia</span><span class="p">;</span> <span class="o">.</span><span class="n">light</span><span class="o">-</span><span class="nb">yellow</span><span class="p">;</span> <span class="p">}</span>
+<span class="err">}</span>
+</code></pre></div>
+<p>That should do it!  You can change the colors if you like, too.  Of course, keep in mind that changing the <code>.t</code> extension will overwrite any perl5 file icon (I think it&#39;s a camel).</p>
+
+<p>Enjoy!</p>
+
+    </section>
+</article>
+<footer id="post-meta" class="clearfix">
+    <a href="http://twitter.com/MadcapJake">
+        <!-- <img class="avatar" src="/assets/images/avatar.png"> -->
+        <img class="avatar" src="https://en.gravatar.com/userimage/31941081/51e1da3e4536eacb322f29d19928db3f.jpeg">
+        <div>
+            <span class="dark">Jake Russo</span>
+            <span>Programming for Pleasure</span>
+        </div>
+    </a>
+
+    <section id="sharing">
+        <a class="twitter" href="https://twitter.com/intent/tweet?text=http://madcapjake.github.io/2015/perl6-file-icons/ - Perl 6 file icons in Atom Editor by @MadcapJake"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+    </section>
+</footer>
+
+<!-- Disqus comments -->
+
+
+<!-- Archive post list -->
+
+    <ul id="post-list" class="archive readmore">
+        <h3>Read more</h3>
+        
+            <li>
+                <a href="/2015/perl6-file-icons/">Perl 6 file icons in Atom Editor<aside class="dates">Dec 03</aside></a>
+            </li>
+        
+            <li>
+                <a href="/2015/earl-grey-chemical-computing/">Chemical Programming in Earl-Grey<aside class="dates">Sep 27</aside></a>
+            </li>
+        
+    </ul>
+
+
+  </section>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/highlight.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXXX-X', 'auto');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
