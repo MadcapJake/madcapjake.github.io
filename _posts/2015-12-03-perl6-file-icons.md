@@ -27,7 +27,7 @@ atom ~/.atom/styles.less
 ```
 Then add this:
 
-```less
+```
 @import "packages/file-icons/styles/colors";
 @import "packages/file-icons/styles/items";
 @import "packages/file-icons/styles/icons";
