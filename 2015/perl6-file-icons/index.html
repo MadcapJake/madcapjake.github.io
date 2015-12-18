@@ -57,10 +57,18 @@
 <div class="highlight"><pre><code class="language-shell" data-lang="shell">apm install file-icons
 <span class="nb">cd</span> ~/.atom/stylesheets
 git clone https://github.com/MadcapJake/perl6-atom-file-icon camelia
+sed -i <span class="s2">&quot;s|/home/jrusso|</span><span class="nv">$HOME</span><span class="s2">|&quot;</span> ~/.atom/stylesheets/camelia/style.css
 atom ~/.atom/styles.less
 </code></pre></div>
 <p>Then add this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">@import (less) &quot;stylesheets/camelia/style.css&quot;;
+<div class="highlight"><pre><code class="language-text" data-lang="text">@import &quot;packages/file-icons/styles/colors&quot;;
+@import &quot;packages/file-icons/styles/items&quot;;
+@import &quot;packages/file-icons/styles/icons&quot;;
+@import (less) &quot;stylesheets/camelia/style.css&quot;;
+
+.octicon-package {
+  content: &quot;\f0c4&quot;
+}
 
 @{pane-tab-selector}, .icon-file-text {
   &amp;[data-name=&quot;META6.json&quot;]:before { .octicons; .octicon-package !important; }
