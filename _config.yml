@@ -10,7 +10,7 @@ highlighter: pygments
 paginate: 20
 baseurl: /
 domain_name: 'http://madcapjake.github.io'
-google_analytics: 'UA-XXXXXXXX-X'
+google_analytics: 'UA-51743755-1'
 disqus: false
 disqus_shortname: 'your-disqus-shortname'
 
