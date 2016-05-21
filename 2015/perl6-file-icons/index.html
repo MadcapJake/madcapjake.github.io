@@ -54,14 +54,14 @@
 <p><img src="https://pbs.twimg.com/media/CVUCgQkUsAEo41l.png:large" alt="Example shot of camelia file icons"></p>
 
 <p>Check out my <a href="https://twitter.com/MadcapJake/status/672446473682837505">tweet</a> for a larger image. If you&#39;re interested in having these lovely file icons, here&#39;s how you do it:</p>
-<div class="highlight"><pre><code class="language-shell" data-lang="shell">apm install file-icons
+<div class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>apm install file-icons
 <span class="nb">cd</span> ~/.atom/stylesheets
 git clone https://github.com/MadcapJake/perl6-atom-file-icon camelia
 sed -i <span class="s2">&quot;s|/home/jrusso|</span><span class="nv">$HOME</span><span class="s2">|&quot;</span> ~/.atom/stylesheets/camelia/style.css
 atom ~/.atom/styles.less
 </code></pre></div>
 <p>Then add this:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">@import &quot;packages/file-icons/styles/colors&quot;;
+<div class="highlight"><pre><code class="language-text" data-lang="text"><span></span>@import &quot;packages/file-icons/styles/colors&quot;;
 @import &quot;packages/file-icons/styles/items&quot;;
 @import &quot;packages/file-icons/styles/icons&quot;;
 @import (less) &quot;stylesheets/camelia/style.css&quot;;
@@ -122,6 +122,10 @@ atom ~/.atom/styles.less
 
     <ul id="post-list" class="archive readmore">
         <h3>Read more</h3>
+        
+            <li>
+                <a href="/2016/perl6-generators/">Generator Elucidator<aside class="dates">May 21</aside></a>
+            </li>
         
             <li>
                 <a href="/2015/perl6-file-icons/">Perl 6 File Icons in Atom Editor<aside class="dates">Dec 03</aside></a>

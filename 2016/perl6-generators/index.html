@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>The Problem of Leisure - Generator Elucidator</title>
+  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="alternate" type="application/rss+xml" title="My Blog" href="/rss.xml">
+  <link rel="stylesheet" href="/assets/css/highlight.css">
+  <link rel="stylesheet" href="/assets/css/pygments.css">
+</head>
+<body>
+
+  <nav class="main-nav">
+    
+        <a href="/"> <span class="arrow">←</span> Home </a>
+    
+
+    
+        
+            <a href="/about">About </a>
+        
+    
+    <a href="https://github.com/MadcapJake">GitHub</a>
+    <a href="https://bitbucket.org/MadcapJake/">Bitbucket</a>
+    <a href="https://twitter.com/MadcapJake">Twitter</a>
+    <a href="https://plus.google.com/u/0/+JakeRusso/posts">G+</a>
+    <a class="cta" href="/feed.xml">Subscribe</a>
+</nav>
+
+
+  
+
+  <section id="wrapper" class="">
+    <article class="post">
+    <header>
+        <h1>Generator Elucidator</h1>
+        <h2 class="headline">May 21, 2016</h2>
+    </header>
+    <section id="post-body">
+        <p>Generators are an interesting trope of programming languages that have been around for a long time but have just recently become a popular tool for the modern programmer. Python has had generators for some time but JavaScript is just recenlty gained them in ES2015.  What exactly is a generator in these languages and does Perl 6 support something like it?  It turns out Perl 6 has a number of features that—though not a one-to-one comparison—provide the same or more expressiveness.</p>
+
+<h2>Python &amp; JS Generators</h2>
+
+<p>Python <a href="https://www.python.org/dev/peps/pep-0255/">generators</a> were added back in 2001.  To define a generator you declare just as you would a regular function (<code>def foo():</code>) but instead of using <code>return</code> you use the <code>yield</code> keyword.  This allows you to pass a value to the caller of your function and then pause the execution of your generator function until it is called again.  At which point, it will proceed from just following the previous <code>yield</code> statement until it reaches another <code>yield</code> or the end of the function.</p>
+
+<p>Generators like this (and JavaScript&#39;s) are known as <a href="https://en.wikipedia.org/wiki/Coroutine#Comparison_with_generators">semi-coroutines</a> and this is because unlike full coroutines, they don&#39;t pass to some other coroutine, they merely return intermediary values to the caller&#39;s scope.  While seemingly limited, this pattern is quite useful for creating iterators in a highly-customizable way. For the terminology nut: a generator <em>function</em> builds a generator <em>iterator</em> which can then be called and used just as other iterables.  In both Python and JavaScript this is done by calling the <code>next</code> function on the iterator (in JavaScript&#39;s case it&#39;s actually a method) or via the <code>for</code> loop.</p>
+
+<blockquote>
+<p><strong>Note</strong>: Generators are also used as a means of representing asynchronous control flow but I will leave that to you to find out why Perl 6 already has <a href="http://doc.perl6.org/language/concurrency">numerous</a> builtin features for accomplishing that. In this article, I will focus on representing generator iterators and the ability to pause execution.</p>
+</blockquote>
+
+<h2>Face Value</h2>
+
+<p>While the generator pattern can be useful in the right context, its direct equivalent is not present in Perl 6. However, there are a number of other tools at your disposal that cover all of the places you would want to use a generator.  First, let&#39;s take a look at an example generator function.</p>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span></span><span class="k">def</span> <span class="nf">countfrom</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">n</span>
+        <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="n">counter</span> <span class="o">=</span> <span class="n">countfrom</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span> <span class="c1"># 10</span>
+<span class="nb">next</span><span class="p">(</span><span class="n">counter</span><span class="p">)</span> <span class="c1"># 11</span>
+</code></pre></div>
+<p>There we have a simple Python generator that when called with <code>next</code>, will execute the function until the <code>yield</code> producing the value <code>n</code> that was provided to the function.  Then it stops.  The incrementing of <code>n</code> <em>does not</em> occur until a successive call to <code>next</code>.  At which point it would increment and then follow the <code>while</code> back to the start of the loop and yield the incremented value.</p>
+
+<h2>Stateful Solution</h2>
+
+<p>I think the simplest—and perhaps closest—representation of this would be with the <a href="http://doc.perl6.org/syntax/state"><code>state</code></a> declarator:</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span><span class="k">sub</span> <span class="n">countfrom</span>(<span class="nv">$n</span>) {
+    <span class="c c-Singleline"># state variables maintain their value each call to the sub</span>
+    <span class="k">state</span> <span class="nv">$counted</span> = <span class="nv">$n</span>;
+    <span class="k">return</span> <span class="nv">$counted</span>++;
+}
+
+<span class="c c-Singleline"># xx means &quot;times&quot; i.e., it creates a list of RHS elements</span>
+<span class="c c-Singleline"># each containing the LHS.</span>
+<span class="nb">say</span> <span class="n">countfrom</span>(<span class="mi">10</span>) <span class="o">xx</span> <span class="mi">10</span>; <span class="cm">#={(10 11 12 13 14 15 16 17 18 19)}</span>
+</code></pre></div>
+<p>This sub accurately reflects the simple generator above.  The <a href="http://doc.perl6.org/syntax/state"><code>state</code></a> variable is maintained between calls and thus each successive call to <code>countfrom</code> is returning an updated value.  The argument to the routine isn&#39;t even used in subsequent calls.  To better illustrate this you could return an anonymous routine that would allow calling without providing a value:</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span><span class="k">sub</span> <span class="n">countfrom</span>(<span class="nv">$n</span>) {
+    <span class="k">sub</span> {
+      <span class="k">state</span> <span class="nv">$counted</span> = <span class="nv">$n</span>;
+      <span class="k">return</span> <span class="nv">$counted</span>++;
+    }
+}
+
+<span class="k">my</span> <span class="nv">&amp;counter</span> = <span class="n">countfrom</span>(<span class="mi">10</span>);
+<span class="nb">say</span> <span class="n">counter</span>() <span class="o">xx</span> <span class="mi">10</span>; <span class="cm">#={(10 11 12 13 14 15 16 17 18 19)}</span>
+
+<span class="k">my</span> <span class="nv">&amp;indices</span> = <span class="n">countfrom</span>(<span class="mi">0</span>);
+<span class="nb">say</span> <span class="n">indices</span>() <span class="o">xx</span> <span class="mi">10</span>; <span class="cm">#={(0 1 2 3 4 5 6 7 8 9)}</span>
+</code></pre></div>
+<p>At usage-level this is very close to the Python code however unlike in Python this function could not be dropped into a <code>for</code> loop.  But there are other structures that could utilize this and I&#39;ll cover one after I show a slightly more complicated generator function.</p>
+
+<hr>
+
+<p>Let&#39;s assume we had a generator that was to calculate some value and return it, then calculate some more and return the new value, then execute some more and return a final value.  Here is the basic Python version:</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span><span class="n">def</span> <span class="n">simple_generator_function</span>():
+    <span class="c c-Singleline"># calculating...</span>
+    <span class="n">yield</span> <span class="mi">1</span>
+    <span class="c c-Singleline"># calculating...</span>
+    <span class="n">yield</span> <span class="mi">10</span>
+    <span class="c c-Singleline"># calculating...</span>
+    <span class="n">yield</span> <span class="mi">100</span>
+</code></pre></div>
+<p>One possible solution here would be to separate the calculations and &quot;yields&quot; into separate code blocks inside a state array and just return a shifted and called block:</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span><span class="k">sub</span> <span class="n">simple</span> {
+    <span class="k">state</span> <span class="nv">@yields</span> = [
+        { <span class="cm">#`{ Calculating... }</span> <span class="mi">1</span> }
+        { <span class="cm">#`{ Calculating... }</span> <span class="mi">2</span> }
+        { <span class="cm">#`{ Calculating... }</span> <span class="mi">3</span> }
+    ];
+    <span class="k">try</span> <span class="nv">@yields</span>.<span class="nb">shift</span>.()
+}
+
+<span class="nb">say</span> <span class="n">simple</span>(); <span class="c c-Singleline">#-&gt; 1</span>
+<span class="nb">say</span> <span class="n">simple</span>(); <span class="c c-Singleline">#-&gt; 2</span>
+<span class="nb">say</span> <span class="n">simple</span>(); <span class="c c-Singleline">#-&gt; 3</span>
+<span class="nb">say</span> <span class="n">simple</span>(); <span class="c c-Singleline">#-&gt; Nil</span>
+</code></pre></div>
+<p>That isn&#39;t so bad. The unfortunate part is that you have to introduce separate lexical scopes for each part of the process so you&#39;d have to carefully pull out any variables that are needed across each block and declare them in the outermost routine scope. Now let me show you how you can use this in a looping construct:</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span><span class="k">my</span> <span class="nv">$i</span> = <span class="n">simple</span>();
+<span class="k">repeat</span> {
+    <span class="nb">say</span> <span class="nv">$i</span> * <span class="mi">100</span>
+} <span class="k">while</span> <span class="nv">$i</span> = <span class="n">simple</span>()
+</code></pre></div>
+<p>Once the value reaches <code>Nil</code> the block no longer executes.</p>
+
+<hr>
+
+<p>Lets nitpick a couple things about the <a href="http://doc.perl6.org/syntax/state"><code>state</code></a> approach.  For one, you are now introducing state into a routine.  State already has a bad enough reputation, now we&#39;re gonna put some inside a routine?! That&#39;s nuts!  I thought part of the point of generators was to avoid extra state. (Brief counterpoint: though we definitely should do our best to limit scope, careful (re: minimal or isolated) usage of these <code>state</code> variables can be a boon to your workflow and your codes readability.)</p>
+
+<p>Another nit is that this solution can quickly become complex.  Each unpaused part of the routine needs to be a separate closure and pretty soon you might have all sorts of <code>my</code> or <a href="http://doc.perl6.org/syntax/state"><code>state</code></a> declarations at the beginning of the outermost routine body to account for separated scopes. (Brief counterpoint: more explicit scoping is not always bad; complex Python generators can quickly become a mess and with this pattern you would be required to rein it in.)</p>
+
+<h2>Gather, Take, Repeat</h2>
+
+<p>Perhaps the closest match for generators is really the list-building <a href="http://doc.perl6.org/syntax/gather%20take"><code>gather</code>/<code>take</code></a> duo.  The <code>gather</code> keyword—in some ways similar to the <code>function*</code> keyword in JavaScript—informs the compiler that &quot;within these walls, <code>take</code> returns a value to be pushed onto an array&quot;.  A bit like laying the guts of the generator out wherein the block is the building grounds for the array&#39;s elements.</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span><span class="k">my</span> <span class="nv">@values</span> = <span class="k">gather</span> {
+    <span class="c c-Singleline"># calculating...</span>
+    <span class="k">take</span> <span class="mi">1</span>;
+    <span class="c c-Singleline"># calculating...</span>
+    <span class="k">take</span> <span class="mi">10</span>;
+    <span class="c c-Singleline"># calculating...</span>
+    <span class="k">take</span> <span class="mi">100</span>
+}
+<span class="nb">say</span> <span class="nv">@values</span> <span class="cm">#={[1 10 100]}</span>
+</code></pre></div>
+<p>In fact, &quot;within these walls&quot; is a misnomer because the gather works <em>dynamically</em> which allows you to place calls to <code>take</code> in routines called within the <code>gather</code>&#39;s scope.</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span><span class="k">sub</span> <span class="n">take1</span>   { <span class="k">take</span> <span class="mi">1</span> }
+<span class="k">sub</span> <span class="n">take10</span>  { <span class="k">take</span> <span class="mi">10</span> }
+<span class="k">sub</span> <span class="n">take100</span> { <span class="k">take</span> <span class="mi">100</span> }
+<span class="k">my</span> <span class="nv">@values</span> = <span class="k">gather</span> {
+  <span class="n">take1</span>()
+  <span class="n">take10</span>()
+  <span class="n">take100</span>()
+}
+<span class="nb">say</span> <span class="nv">@values</span> <span class="cm">#={[1 10 100]}</span>
+</code></pre></div>
+<hr>
+
+<p>Perl 6 has three classes for array-like structures: <a href="http://doc.perl6.org/type/Seq">Seq</a> is anything that can lazily produce a <em>sequence</em> of values (while not actually keeping them after production). <a href="http://doc.perl6.org/type/List">List</a> is a sequence of values that sticks around. <a href="http://doc.perl6.org/type/Array">Array</a> is a sequence of mutable containers that stick around. <code>gather</code> returns a <a href="http://doc.perl6.org/type/Seq">Seq</a> but you can convert between the three, being careful not to try to eagerly collect an infinite list.</p>
+
+<p>The resultant structure (<a href="http://doc.perl6.org/type/Seq">Seq</a>) is inherently lazy. As long as you remain in the <a href="http://doc.perl6.org/type/Seq">Seq</a> domain, your generator-like will lazily execute, but if you try to turn it into an <a href="http://doc.perl6.org/type/Array">Array</a>, Perl 6 will eagerly collect all values.  In the example above, <code>@values</code> was eagerly collected as the assignment to the container turns it into an <a href="http://doc.perl6.org/type/Array">Array</a>. Here&#39;s an example of a gather block that stays as a <a href="http://doc.perl6.org/type/Seq">Seq</a> and thus is lazily executed:</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span>(<span class="k">gather</span> {
+    <span class="k">for</span> <span class="s">&#39;a&#39;</span>, <span class="s">&#39;b&#39;</span> ... * {
+        <span class="s">&#39;before&#39;</span>.<span class="nb">say</span>;
+        <span class="k">take</span> <span class="nv">$_</span>;
+        <span class="s">&#39;after&#39;</span>.<span class="nb">say</span>;
+    }
+})[<span class="mi">0</span><span class="o">..</span><span class="mi">1</span>].<span class="nb">say</span>
+<span class="cm">#={before}</span>
+<span class="cm">#={after}</span>
+<span class="cm">#={before}</span>
+<span class="cm">#={(a b)}</span>
+</code></pre></div>
+<p>If you want to use <code>shift</code> as you would <code>next</code> in Python, you&#39;ll need to use that <code>lazy</code> keyword to make sure that the generated <a href="http://doc.perl6.org/type/Array">Array</a> does not eagerly collect all values:</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span>(<span class="nb">lazy</span> <span class="k">gather</span> {
+    <span class="k">for</span> <span class="s">&lt;a b c d e f g&gt;</span> {
+        <span class="s">&#39;before&#39;</span>.<span class="nb">say</span>;
+        <span class="k">take</span> (<span class="nv">$_</span>.<span class="nb">ord</span>.<span class="nb">Int</span> + <span class="mi">1</span>).<span class="nb">chr</span>
+        <span class="s">&#39;after&#39;</span>.<span class="nb">say</span>;
+    }
+}).<span class="nb">Array</span>.<span class="nb">shift</span>.<span class="nb">say</span>;
+<span class="cm">#={before}</span>
+<span class="cm">#={b}</span>
+</code></pre></div>
+<hr>
+
+<p>The <a href="http://doc.perl6.org/syntax/gather%20take"><code>gather</code>/<code>take</code></a> construct is perhaps the closest to Python/JavaScript generators that Perl 6 has but there are a few other use-cases for generators that Perl 6 has some great tools for.</p>
+
+<h2>Laudable Lazy &quot;Lists&quot;</h2>
+
+<p>In Perl 6 you can easily write lazy lists (really they are lazy <a href="http://doc.perl6.org/type/Seq">Seq</a> values).  First of all, the basic <a href="http://doc.perl6.org/type/Range">Range</a> is lazy by default (but also will be eagerly collected if you convert it to an <a href="http://doc.perl6.org/type/Array">Array</a>):</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span><span class="nb">say</span> (<span class="mi">1</span><span class="o">..</span><span class="mi">1_000_000</span>);             <span class="cm">#={1..1000000}</span>
+<span class="nb">say</span> (<span class="mi">1</span><span class="o">..</span><span class="mi">1_000_000</span>)[<span class="mi">5</span><span class="o">..</span><span class="mi">10</span>];      <span class="cm">#={(6 7 8 9 10 11)}</span>
+<span class="nb">say</span> (<span class="mi">100</span><span class="o">..</span><span class="n">Inf</span>)[<span class="mi">0</span><span class="o">..</span><span class="mi">5</span>];           <span class="cm">#={(100 101 102 103 104 105)}</span>
+<span class="nb">say</span> (<span class="mi">100</span><span class="o">..</span><span class="n">Inf</span>).<span class="nb">Array</span>.[<span class="mi">0</span><span class="o">..</span><span class="mi">5</span>]     <span class="cm">#={hangs indefinitely}</span>
+<span class="nb">say</span> (<span class="nb">lazy</span> <span class="mi">100</span><span class="o">..</span><span class="n">Inf</span>).<span class="nb">Array</span>.<span class="nb">shift</span> <span class="cm">#={100}</span>
+</code></pre></div>
+<p>Another way to generate lazy <a href="http://doc.perl6.org/type/Seq">Seq</a> values is with the sequence operator (<a href="http://doc.perl6.org/language/operators#infix_..."><code>...</code></a>). It creates a <a href="http://doc.perl6.org/type/Seq">Seq</a> just like the range operator but it also allows you to specify a pattern:</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span>(<span class="mi">1</span>, <span class="mi">3</span>... *)[^<span class="mi">10</span>].<span class="nb">say</span> <span class="cm">#={(1 3 5 7 9 11 13 15 17 19)}</span>
+(<span class="mi">10</span>, <span class="mi">20</span> ... *)[<span class="mi">5</span>].<span class="nb">say</span> <span class="cm">#={50}</span>
+(<span class="mi">100</span>, <span class="mi">200</span> ... <span class="mi">1000</span>)[*-<span class="mi">2</span>..*-<span class="mi">1</span>].<span class="nb">say</span> <span class="cm">#={(900 1000)}</span>
+(<span class="mi">1</span>, <span class="mi">2</span> ... *).<span class="nb">Array</span>.[<span class="mi">5</span>].<span class="nb">say</span> <span class="cm">#={hangs indefinitely}</span>
+(<span class="nb">lazy</span> <span class="mi">1</span>, <span class="mi">2</span> ... *).<span class="nb">Array</span>.[<span class="mi">5</span>].<span class="nb">say</span> <span class="cm">#={6}</span>
+</code></pre></div>
+<p>So you see, in some instances that you might use a generator in another language, Perl 6 would allow you to quite simply create expressions via nifty operators like <a href="http://doc.perl6.org/language/operators#infix_.."><code>..</code></a> or <a href="http://doc.perl6.org/language/operators#infix_..."><code>...</code></a> and there are many more!</p>
+
+<hr>
+
+<p>There&#39;s one final set of tools that (though also available to Python and JavaScript programmers via <code>__next__</code> in Python and <code>Symbol.iterator</code> in JavaScript) is useful when you would consider using the generator pattern: the <a href="http://doc.perl6.org/type/Iterator">Iterator</a> and <a href="http://doc.perl6.org/type/Iterable">Iterable</a> roles.</p>
+
+<h2>Iterator: Rise of the Classes</h2>
+
+<p>Like Python and Java, Perl 6 has the distinction between an <a href="http://doc.perl6.org/type/Iterator">Iterator</a> and an <a href="http://doc.perl6.org/type/Iterable">Iterable</a>. An <a href="http://doc.perl6.org/type/Iterator">Iterator</a> is the actual sequence of values that is to be iterated over.  An Iterable is anything that can produce an <a href="http://doc.perl6.org/type/Iterator">Iterator</a>.  The reason for this distinction is that the <a href="http://doc.perl6.org/type/Iterator">Iterator</a> contains the state that is shifted as it works through the available values and the <a href="http://doc.perl6.org/type/Iterable">Iterable</a> is the originating collection that has no need to contain the state corresponding to the process of iteration.  It&#39;s a distinction of &quot;roles&quot;.  The data in an Iterable-roled class is meant for collection while the data in an Iterator-roled class is meant for iteration. In fact, this corroborates that same distinction between a generator <em>function</em> (here an <a href="http://doc.perl6.org/type/Iterable">Iterable</a>) and a generator <em>iterator</em> (here an <a href="http://doc.perl6.org/type/Iterator">Iterator</a>)</p>
+
+<p>The <a href="http://doc.perl6.org/type/Iterable">Iterable</a> role requires that a class provides an <code>iterator</code> method which returns some value implementing the <a href="http://doc.perl6.org/type/Iterator">Iterator</a> role (equivalent to Python&#39;s <code>__iter__</code>). The <a href="http://doc.perl6.org/type/Iterator">Iterator</a> role requires that a class provides a <code>pull-one</code> method (equivalent to Python&#39;s <code>__next__</code>).</p>
+<div class="highlight"><pre><code class="language-perl6" data-lang="perl6"><span></span><span class="nb">Seq</span>.<span class="nb">new</span>(<span class="k">class</span> :: <span class="nb">does</span> <span class="n">Iterator</span> {
+    <span class="k">my</span> <span class="nv">@values</span> = [<span class="mi">1</span>, <span class="mi">10</span>, <span class="mi">100</span>];
+    <span class="k">method</span> <span class="n">pull-one</span> { <span class="nv">@values</span>.<span class="nb">shift</span> }
+}.<span class="nb">new</span>)[<span class="mi">0</span><span class="o">..</span><span class="mi">2</span>].<span class="nb">say</span>; <span class="cm">#={[1 10 100]}</span>
+
+<span class="k">for</span> <span class="k">class</span> :: <span class="nb">does</span> <span class="n">Iterable</span> {
+    <span class="k">method</span> <span class="nb">iterator</span> {
+        (<span class="k">gather</span> {
+            <span class="k">take</span> <span class="mi">1</span>;
+            <span class="k">take</span> <span class="mi">10</span>;
+            <span class="k">take</span> <span class="mi">100</span>;
+        }).<span class="nb">iterator</span>
+    }
+}.<span class="nb">new</span> {
+    <span class="s">&quot;$_ &quot;</span>.<span class="nb">print</span>
+} <span class="cm">#={1 10 100 }</span>
+</code></pre></div>
+<p>To nitpick on this pattern, properly utilizing this requires being fully invested in an object-oriented model for your program. In other cases, using <a href="http://doc.perl6.org/syntax/gather%20take"><code>gather</code>/<code>take</code></a> or the stateful approach will prove simpler and equally expressive. It also helps that <a href="http://doc.perl6.org/type/Seq">Seq</a> gives you the <code>iterator</code> method which makes using them in <code>for</code> loops easy.</p>
+
+<hr>
+
+<p>While generators or semi-coroutines are not directly available in the same form as Python or JavaScript, there are still many available paths you can take in Perl 6 to accomplish the same results.  If you find another interesting generator pattern, please provide the details in a tweet or on IRC!</p>
+
+    </section>
+</article>
+<footer id="post-meta" class="clearfix">
+    <a href="http://twitter.com/MadcapJake">
+        <!-- <img class="avatar" src="/assets/images/avatar.png"> -->
+        <img class="avatar" src="https://en.gravatar.com/userimage/31941081/51e1da3e4536eacb322f29d19928db3f.jpeg">
+        <div>
+            <span class="dark">Jake Russo</span>
+            <span>Programming for Pleasure</span>
+        </div>
+    </a>
+
+    <section id="sharing">
+        <a class="twitter" href="https://twitter.com/intent/tweet?text=http://madcapjake.github.io/2016/perl6-generators/ - Generator Elucidator by @MadcapJake"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+    </section>
+</footer>
+
+<!-- Disqus comments -->
+
+
+<!-- Archive post list -->
+
+    <ul id="post-list" class="archive readmore">
+        <h3>Read more</h3>
+        
+            <li>
+                <a href="/2016/perl6-generators/">Generator Elucidator<aside class="dates">May 21</aside></a>
+            </li>
+        
+            <li>
+                <a href="/2015/perl6-file-icons/">Perl 6 File Icons in Atom Editor<aside class="dates">Dec 03</aside></a>
+            </li>
+        
+            <li>
+                <a href="/2015/earl-grey-chemical-computing/">Chemical Programming in Earl-Grey<aside class="dates">Sep 27</aside></a>
+            </li>
+        
+    </ul>
+
+
+  </section>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/highlight.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-51743755-1', 'auto');
+    ga('send', 'pageview');
+  </script>
+</body>
+</html>
