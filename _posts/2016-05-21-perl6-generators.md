@@ -4,7 +4,7 @@ date:   2016-05-21 08:56:00
 description: Perl 6 alternatives to Python and JavaScript generators.
 ---
 
-Generators are an interesting trope of programming languages that have been around for a long time but have just recently become a popular tool for the modern programmer. Python has had generators for some time but JavaScript is just recenlty gained them in ES2015.  What exactly is a generator in these languages and does Perl 6 support something like it?  It turns out Perl 6 has a number of features that—though not a one-to-one comparison—provide the same or more expressiveness.
+Generators are an interesting trope of programming languages that have been around for a long time but have just recently become a popular tool for the modern programmer. Python has had generators for some time but JavaScript just recently gained them in ES2015.  What exactly is a generator in these languages and does Perl 6 support something like it?  It turns out Perl 6 has a number of features that—though not a one-to-one comparison—provide the same or more expressiveness.
 
 ## Python & JS Generators
 
